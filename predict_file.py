@@ -103,7 +103,7 @@ def upload_file():
             image = Image.open(filepath_face)
             image = image.convert('RGB')
             image = image.resize((img_size, img_size))
-            data = np.asarray(image)
+            data = np.asarray(image) / 255
             
             X = []
             X.append(data)
