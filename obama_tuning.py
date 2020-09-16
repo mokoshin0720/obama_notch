@@ -30,35 +30,37 @@ def main():
     model_evaluate(model, X_test, y_test)
 
 def model_train(X_train, y_train, X_test, y_test):
-    # VGG16のロード。FC層は不要なので include_top=False
+    # VGG16のロード。 全結合層は不要だから、include_top=False
     input_tensor = Input(shape=(img_size, img_size, 3))
     vgg16 = VGG16(include_top=False, weights='imagenet', input_tensor=input_tensor)
 
-    # VGG16の図の緑色の部分（FC層）の作成
+    # 全結合層の作成
     top_model = Sequential()
     top_model.add(Flatten(input_shape=vgg16.output_shape[1:]))
     top_model.add(Dense(256, activation='relu'))
     top_model.add(Dropout(0.5))
     top_model.add(Dense(num_names, activation='softmax'))
 
-    # VGG16とFC層を結合してモデルを作成（完成図が上の図）
+    # VGG16と全結合層を1つにして、モデルの完成
     vgg_model = Model(input=vgg16.input, output=top_model(vgg16.output))
 
-    # VGG16の図の青色の部分は重みを固定（frozen）
+    # VGG16の15層までは重みを固定して、16層目のみ訓練させる
     for layer in vgg_model.layers[:15]:
         layer.trainable = False
 
-    # 多クラス分類を指定
+    # 多クラス分類
     vgg_model.compile(loss='categorical_crossentropy',
             optimizer="sgd",
             metrics=['accuracy'])
 
     # vgg_model.summary()
 
+    # 過学習を防ぐためのパラメーター
     early_stopping =  EarlyStopping(monitor="val_accuracy", min_delta=0.00001, patience=5)
 
     history = vgg_model.fit(X_train, y_train, batch_size=32, epochs=100, callbacks=[early_stopping], validation_data=(X_test, y_test))
 
+    # 訓練の視覚化
     plt.plot(history.history["accuracy"], label="acc", ls="-", marker="o")
     plt.plot(history.history["val_accuracy"], label="val_acc", ls="-", marker="x")
     plt.plot(history.history["loss"], label="loss", ls="-", marker="o")
@@ -66,16 +68,17 @@ def model_train(X_train, y_train, X_test, y_test):
     plt.ylabel("accuracy")
     plt.xlabel("epoch")
     plt.legend(loc="best")
-    #Final.pngという名前で、結果を保存
+    
+    #　訓練の様子を保存
     plt.savefig('Final.png')
     plt.show()
 
-    # モデルの保存
+    # モデルの重みを保存
     vgg_model.save_weights("./obama_cnn.h5")
 
     return vgg_model
 
-def model_evaluate(model, X, y):
+def model_evaluate(model, X, y): # モデルの評価
     scores = model.evaluate(X, y, verbose=1)
     print("loss:", scores[0])
     print("accuracy:", scores[1])
