@@ -21,7 +21,9 @@ for index, name in enumerate(names):
     files = glob.glob(photos_dir + "/*.jpg")
 
     for i, file in enumerate(files):
-        if i >= num_traindata + num_testdata: break
+        if i >= num_traindata + num_testdata: break # 画像の枚数を超えたらストップ
+        
+        # 画像サイズを小さくして、dataにnumpy配列で格納
         img = Image.open(file)
         img = img.convert("RGB")
         img = img.resize((img_size, img_size))
@@ -30,9 +32,9 @@ for index, name in enumerate(names):
         if i < num_testdata: # テストデータは水増しせず、そのまま追加
             X_test.append(data)
             Y_test.append(index)
-        else:
+        else: # 訓練データの水増し
             for angle in range(-30, 30, 3):
-                # 5度刻みに回転をさせる
+                # 3度刻みに回転をさせる
                 img_r = img.rotate(angle)
                 data = np.asarray(img_r)
                 X_train.append(data)
@@ -51,16 +53,10 @@ for index, name in enumerate(names):
                 X_train.append(data)
                 Y_train.append(index)
 
-                # 明度を上げる
-                img_prebri = ImageEnhance.Brightness(img_r)
-                img_bri = img_prebri.enhance(2.0)
-                X_train.append(data)
-                Y_train.append(index)
-
 X_train = np.array(X_train)
 X_test = np.array(X_test)
 y_train = np.array(Y_train)
 y_test = np.array(Y_test)
 
 xy = (X_train, X_test, y_train, y_test)
-np.save("./obama_augmented_cont_bri.npy", xy)
+np.save("./obama_augmented.npy", xy)
