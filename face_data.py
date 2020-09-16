@@ -18,10 +18,11 @@ for name in names:
     face_detect_num = 0
 
     for i in range(img_num):
+        # 1枚ずつimgに画像を格納
         img = cv2.imread(input_data_path + '/0' + str(i) + ".jpg", cv2.IMREAD_COLOR)
-        if img is None:
+        if img is None: # 画像がない場合
             print("img" + str(i) + "は顔を検出できませんでした。")
-        else:
+        else: # 顔の切り抜き処理
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             face = faceCascade.detectMultiScale(gray, 1.1, 3)
             if len(face) > 0:
@@ -33,8 +34,5 @@ for name in names:
                     h = rect[3]
                     cv2.imwrite(save_path + "cutted_" + str(face_detect_num) + ".jpg", img[y:y+h, x:x+w])
                     face_detect_num += 1
-            else:
+            else: # 顔が読み取れない場合
                 print("img" + str(i) + "は顔を検出できませんでした。")
-
-print("顔画像の切り取り作業、正常に動作しました。")
-print("検知した顔の数は" + str(face_detect_num) + "です")
