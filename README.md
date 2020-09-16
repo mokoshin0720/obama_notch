@@ -2,8 +2,8 @@
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/65533712/93400701-5b25d400-f8bb-11ea-808f-1733e14e8b34.gif)
 
 # 精度
-98.88%<br/>
-画像URL
+98.3%<br/>
+![Final](https://user-images.githubusercontent.com/65533712/93401843-223b2e80-f8be-11ea-8b64-c3b38c0ff37b.png)
 
 # 使った言語 & 制作期間
 言語：pyhon / opencv / pillow / tensorflow / flask<br/>
